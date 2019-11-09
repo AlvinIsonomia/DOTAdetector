@@ -19,7 +19,7 @@ def custombasename(fullname):
 def GetFileFromThisRootDir(dir,ext = None):
   allfiles = []
   needExtFilter = (ext != None)
-  for root,dirs,files in os.walk(dir):
+  for root,dirs,files in os.walk(dir):# os.walk 游走遍历整个文件夹
     for filespath in files:
       filepath = os.path.join(root, filespath)
       extension = os.path.splitext(filepath)[1][1:]
@@ -168,12 +168,12 @@ def Task2groundtruth_poly(srcpath, dstpath):
     thresh = 0.1
     filedict = {}
     Tasklist = GetFileFromThisRootDir(srcpath, '.txt')
-
     for Taskfile in Tasklist:
+#         print('你好哦！')
         idname = custombasename(Taskfile).split('_')[-1]
         # idname = datamap_inverse[idname]
-        f = open(Taskfile, 'r')
-        lines = f.readlines()
+        with open(Taskfile, 'r') as f:
+            lines = f.readlines()
         for line in lines:
             if len(line) == 0:
                 continue
@@ -183,9 +183,9 @@ def Task2groundtruth_poly(srcpath, dstpath):
             confidence = splitline[1]
             bbox = splitline[2:]
             if float(confidence) > thresh:
-                if filename not in filedict:
+#                 if filename not in filedict:
                     # filedict[filename] = codecs.open(os.path.join(dstpath, filename + '.txt'), 'w', 'utf_16')
-                    filedict[filename] = codecs.open(os.path.join(dstpath, filename + '.txt'), 'w')
+                filedict[filename] = open(os.path.join(dstpath, filename + '.txt'), 'a')
                 # poly = util.dots2ToRec8(bbox)
                 poly = bbox
                 #               filedict[filename].write(' '.join(poly) + ' ' + idname + '_' + str(round(float(confidence), 2)) + '\n')
@@ -194,8 +194,8 @@ def Task2groundtruth_poly(srcpath, dstpath):
             # filedict[filename].write(' '.join(poly) + ' ' + idname + '_' + str(round(float(confidence), 2)) + '\n')
 
                 filedict[filename].write(' '.join(poly) + ' ' + idname + '\n')
-
-
+                filedict[filename].close()
+                
 def polygonToRotRectangle(bbox):
     """
     :param bbox: The polygon stored in format [x1, y1, x2, y2, x3, y3, x4, y4]
